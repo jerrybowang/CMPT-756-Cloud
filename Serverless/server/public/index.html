@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Static Web Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+    </style>
+</head>
+<body>
+    <p>Welcome to my static web page. This is a simple example of an HTML file.</p>
+    <form id="dataForm">
+        <div>
+            <label for="male">Male (1 for male, 0 for not male):</label>
+            <input type="number" id="male" name="male" min="0" max="1" value="1" required>
+        </div>
+        <div>
+            <label for="age">Age:</label>
+            <input type="number" id="age" name="age" value="32" required>
+        </div>
+        <div>
+            <label for="salary">Salary:</label>
+            <input type="number" id="salary" name="salary" value="45000" required>
+        </div>
+        <div>
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" value="5000" required>
+        </div>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    <div id="result"></div>
+    
+</body>
+<script src="./js/handleDataForm.js"></script>
+</html>
