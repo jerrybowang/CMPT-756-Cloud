@@ -4,7 +4,7 @@ import cv2
 
 
 # Load the model
-model = tf.keras.models.load_model('model.keras')
+model = tf.keras.models.load_model('model/model.keras')
 
 class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
                'dog', 'frog', 'horse', 'ship', 'truck']
