@@ -1,0 +1,6 @@
+Flask>=3.0.0
+numpy>=1.26.0
+opencv-python-headless
+tensorflow==2.15.0
+transformers==4.38.1
+tf-keras==2.15
