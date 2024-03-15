@@ -1,0 +1,5 @@
+functions-framework==3.*
+google-cloud-storage==1.25.0
+transformers==4.38.2
+tensorflow
+pillow

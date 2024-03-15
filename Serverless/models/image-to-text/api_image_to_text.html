@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #previewImage {
+            max-width: 100%;
+            max-height: 300px; /* Limit the height for display */
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Upload</h1>
+    <form id="uploadForm" enctype="multipart/form-data" method="post" action="">
+        <input type="file" id="imageInput" name="image" accept="image/*" onchange="previewImage(event)">
+        <input type="submit" value="Upload" onclick="print_loading(event)">
+    </form>
+    <img id="previewImage" src="#" alt="Preview Image" style="display: none;">
+    <div id="response"></div>
+
+    <script>
+        function print_loading(event){
+            document.getElementById('response').innerText = 'Loading';
+        }
+
+        function previewImage(event) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+            const image = document.getElementById('previewImage');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    image.src = event.target.result;
+                    image.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                image.src = '#';
+                image.style.display = 'none';
+            }
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission behavior
+
+            const formElement = event.target;
+            const formData = new FormData(formElement);
+
+            submitFormData(formData);
+        });
+
+        function submitFormData(formData) {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        document.getElementById('response').innerText = xhr.responseText;
+                    } else {
+                        document.getElementById('response').innerText = 'Request failed';
+                    }
+                }
+            };
+
+            xhr.open('POST', 'https://us-west1-cmpt-756-interactive-session-1.cloudfunctions.net/cmpt756-project-function-test-1');
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
