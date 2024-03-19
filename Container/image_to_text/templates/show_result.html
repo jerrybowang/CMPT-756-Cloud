@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Viewer</title>
+</head>
+<body>
+    <!-- 显示图片 -->
+    <img src="{{ image_url }}" alt="Image">
+    <br>
+    <p> text:{{ class_name }} </p>
+    <!-- 删除按钮 -->
+    <button onclick="window.location.href='/delete/{{ filename }}'">Delete Image</button>
+</body>
+</html>

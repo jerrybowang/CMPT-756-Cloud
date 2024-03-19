@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Deletion Successful</title>
+    <script type="text/javascript">
+        // Show a deletion success message, then redirect after 2 seconds
+        alert("File {{ filename }} has been successfully deleted!");
+        setTimeout(function(){
+            window.location = "{{ redirect_url }}";
+        }, 2000); // Redirect after 2000 milliseconds
+    </script>
+</head>
+<body>
+    If your browser does not automatically redirect, please <a href="{{ redirect_url }}">click here</a>.
+</body>
+</html>
