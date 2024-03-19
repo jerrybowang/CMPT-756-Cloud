@@ -1,35 +1,38 @@
 import functions_framework
+from flask import make_response
+import requests
 import sklearn
+from google.cloud import storage
+from datasets import load_from_disk, Dataset
 import os
 import torch
+from transformers import AutoProcessor, AutoModelForTextToSpectrogram, pipeline
 import base64
-from transformers import pipeline
-from google.cloud import storage
-from datasets import load_from_disk
-from flask import make_response,jsonify
-
+from flask import jsonify
 
 storage_client = storage.Client()
 
 
 @functions_framework.http
 def hello_http(request):
-    """HTTP Cloud Function.
-    Args:
-        request (flask.Request): The request object.
-        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`
-        <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
-    """
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST,OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+        return ('', 204, headers)    
+    print("111Headers:", request)
+    print("222Headers:", request.headers)
+    print("333Body:", request.get_data(as_text=True))
     request_json = request.get_json(silent=True)
     request_args = request.args
     input = request_json['input']
 
 
     # Environment variables for the GCS bucket and model directory
-    MODEL_DIR = '/tmp/model'
+    MODEL_DIR = '/tmp'
     DATASET_DIR = '/tmp/dataset'
     os.makedirs(MODEL_DIR, exist_ok=True)
     os.makedirs(DATASET_DIR, exist_ok=True)
@@ -42,15 +45,13 @@ def hello_http(request):
         "special_tokens_map.json",
         "spm_char.model",
         "tokenizer_config.json"
-    ]     
-    if not os.listdir(MODEL_DIR):  # This checks if the directory is empty
+    ]   
+    dataset_files = ["data-00000-of-00001.arrow", "state.json","dataset_info.json"]  
+    if not os.path.exists("/tmp/pytorch_model.bin"):
         for file_name in model_files:
             download_model_files('cmpt-756-group-bucket', f"speecht5_tts/{file_name}",os.path.join(MODEL_DIR, file_name))
-    dataset_files = ["data-00000-of-00001.arrow", "state.json","dataset_info.json"]
-    
-    if not os.listdir(DATASET_DIR):  # This checks if the directory is empty
-        for file_name in dataset_files:
-            download_model_files('cmpt-756-group-bucket', f"speecht5_tts/dataset/{file_name}",os.path.join(DATASET_DIR, file_name))
+        for i in dataset_files:
+            download_model_files('cmpt-756-group-bucket', f"speecht5_tts/dataset/{i}",os.path.join(DATASET_DIR, i))
                 
     # processor = AutoProcessor.from_pretrained(MODEL_DIR)
     # model = AutoModelForTextToSpectrogram.from_pretrained(MODEL_DIR)
@@ -67,6 +68,8 @@ def hello_http(request):
         "sampling_rate": speech["sampling_rate"]
     })
     response.headers.set('Content-Type', 'application/json')
+    response.headers['Access-Control-Allow-Origin'] = '*'  # Allows all domains
+    response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS'
     
     # Return the response
     return response    
@@ -78,16 +81,7 @@ def download_model_files(bucket_name, source_blob_name, destination_file_name):
     blob.download_to_filename(destination_file_name)
     print(f"{source_blob_name} downloaded to {destination_file_name}.")
 
-# def download_dataset(bucket_name, prefix, local_path):
-#     """Download all files in the specified prefix from the bucket to the local path."""
-#     blobs = storage_client.list_blobs(bucket_name, prefix=prefix)
-#     # os.makedirs(local_path, exist_ok=True)
-#     for blob in blobs:
-#         local_file_path = os.path.join(local_path, os.path.basename(blob.name))
-#         download_model_files(bucket_name, blob.name, local_file_path)
-        
 
- 
 
 # functions-framework==3.*
 # google-cloud-storage==1.25.0
@@ -98,9 +92,5 @@ def download_model_files(bucket_name, source_blob_name, destination_file_name):
 # tensorflow
 # torch
 # Flask
-     
-     
-# https://us-central1-nice-beanbag-416418.cloudfunctions.net/function-2     
 
-# Sample Input
-# {input:"I love this"}
+     

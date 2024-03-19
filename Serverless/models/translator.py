@@ -8,22 +8,27 @@ from google.cloud import storage
 storage_client = storage.Client()
 @functions_framework.http
 def translator(request):
-    """HTTP Cloud Function.
-    Args:
-        request (flask.Request): The request object.
-        <https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data>
-    Returns:
-        The response text, or any set of values that can be turned into a
-        Response object using `make_response`
-        <https://flask.palletsprojects.com/en/1.1.x/api/#flask.make_response>.
-    """
+    if request.method == 'OPTIONS':
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST,OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Max-Age': '3600'
+        }
+        return ('', 204, headers)
+
+    # Main request handling
+    headers = {
+        'Access-Control-Allow-Origin': '*'
+    }
+
     request_json = request.get_json(silent=True)
     request_args = request.args
     input = request_json['input']
 
 
     # Environment variables for the GCS bucket and model directory
-    MODEL_DIR = '/tmp/model'
+    MODEL_DIR = '/tmp'
     os.makedirs(MODEL_DIR, exist_ok=True)
     # Model and tokenizer file names
     model_files = [
@@ -36,14 +41,14 @@ def translator(request):
         "tokenizer_config.json",
         "vocab.json"
     ]     
-    if not os.listdir(MODEL_DIR):  # This checks if the directory is empty
+    # This checks if the directory is empty
+    if not os.path.exists("/tmp/model.safetensors"):
         for file_name in model_files:
             download_model_files('cmpt-756-group-bucket', f"translator/{file_name}",os.path.join(MODEL_DIR, file_name))
     model = pipeline("translation", MODEL_DIR)
     output =model(input)[0].get("translation_text")
-    print(output)
 
-    return output
+    return (output,200,headers)
 
 # Function to download model files from GCS
 def download_model_files(bucket_name, source_blob_name, destination_file_name):
