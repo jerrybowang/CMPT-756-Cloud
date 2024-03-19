@@ -40,7 +40,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install -r requirements.txt
 
 
+# Install git and git-lfs
+RUN apt-get update && \
+    apt-get install -y git git-lfs && \
+    rm -rf /var/lib/apt/lists/*
 
+# Clone the model repository
+RUN git lfs install && \
+    git clone https://huggingface.co/Salesforce/blip-image-captioning-base
 
 
 
