@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Text Translation</title>
+</head>
+<body>
+    <h2>Enter Text for Translation</h2>
+    <form action="/translate" method="post">
+        <textarea name="text" rows="4" cols="50"></textarea><br>
+        <input type="submit" value="Translate">
+    </form>
+    {% if original_text %}
+        <h3>Original Text</h3>
+        <p>{{ original_text }}</p>
+        <h3>Translated Text</h3>
+        <p>{{ translated_text }}</p>
+    {% endif %}
+</body>
+</html>

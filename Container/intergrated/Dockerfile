@@ -24,11 +24,11 @@ ARG UID=10001
 RUN adduser \
     --disabled-password \
     --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
+    --home "/home/appuser" \
+    --shell "/bin/bash" \
     --uid "${UID}" \
     appuser
+
 
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
@@ -40,16 +40,22 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     python3 -m pip install -r requirements.txt
 
 
-# Install git and git-lfs
-RUN apt-get update && \
-    apt-get install -y git git-lfs && \
-    rm -rf /var/lib/apt/lists/*
-
-# Clone the model repository
-RUN git lfs install && \
-    git clone https://huggingface.co/Salesforce/blip-image-captioning-base
+RUN apt-get update && apt-get install -y libsndfile1
 
 
+# # Install git and git-lfs
+# RUN apt-get update && \
+#     apt-get install -y git git-lfs && \
+#     rm -rf /var/lib/apt/lists/*
+
+# # Clone the model repository
+# RUN git lfs install
+
+# RUN git clone https://huggingface.co/Salesforce/blip-image-captioning-base
+
+# RUN git clone https://huggingface.co/Helsinki-NLP/opus-mt-zh-en
+
+# RUN git clone https://huggingface.co/microsoft/speecht5_tts
 
 # Copy the source code into the container.
 COPY . .

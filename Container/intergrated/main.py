@@ -1,5 +1,7 @@
 import os
 import prediction
+from datetime import datetime
+import soundfile as sf
 from flask import Flask, request, send_file, render_template, jsonify, url_for
 
 app = Flask(__name__)
@@ -57,12 +59,42 @@ def sentiment_analysis():
     return render_template('sentiment.html')
 
 
+# Route for translating text
+@app.route("/translate", methods=["GET", "POST"])
+def translate():
+    if request.method == "POST":
+        text = request.form['text']
+        translated_text = prediction.translation_eng(text)  # Ensure you have defined this function
+        return render_template("translate.html", original_text=text, translated_text=translated_text)
+    else:
+        return render_template("translate.html", original_text=None, translated_text=None)
 
 
+# Route for the text to speech
+@app.route("/text_to_speech", methods=["GET", "POST"])
+def text_to_speech():
+    if request.method == "POST":
+        text = request.form['text']
+        audio, sample_rate = prediction.text_to_speech(text)
+        # Generate a unique filename with timestamp
+        timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f"generated_audio_{timestamp}.wav"
+        output_path = os.path.join("uploads", filename)
+        # Save the audio file
+        sf.write(output_path, audio, samplerate=sample_rate)
+        return send_file(output_path, as_attachment=True)
+    else:
+        return render_template("text_to_speech.html")
+
+
+# Route for the home page
 @app.route("/")
 def hello_world():
-    return render_template("index.html", image_to_text=url_for("image_to_text"),
-                           sentiment_analysis=url_for("sentiment_analysis"))
+    return render_template("index.html", 
+                           image_to_text=url_for("image_to_text"),
+                           sentiment_analysis=url_for("sentiment_analysis"),
+                           translate=url_for("translate"),
+                           text_to_speech=url_for("text_to_speech"))
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

@@ -1,7 +1,12 @@
 Flask>=3.0.0
 numpy>=1.26.0
-keras==2.15.0
-tensorflow>=2.15.0
+tf-keras==2.15
+tensorflow-cpu==2.15.0
 transformers
 scikit-learn
 pillow
+datasets
+soundfile
+torch
+sentencepiece
+sacremoses

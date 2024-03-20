@@ -161,3 +161,7 @@ cython_debug/
 
 
 .DS_Store
+
+speecht5_tts
+blip-image-captioning-base
+opus-mt-zh-en
