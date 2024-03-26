@@ -3,7 +3,7 @@ import threading
 import time
 
 # 定义请求URL
-base_url = "https://cmpt756-yildpitzqa-uw.a.run.app" # 你的URL
+base_url = "<url>" # 你的URL
 image_to_text_url = f"{base_url}/image_to_text"
 sentiment_analysis_url = f"{base_url}/sentiment_analysis"
 translate_url = f"{base_url}/translate"

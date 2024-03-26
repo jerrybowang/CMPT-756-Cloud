@@ -7,14 +7,40 @@ Group member
 - Barry Zhao: [@Barry7043](https://github.com/Barry7043)
 
 ## Project Description
-We plan to leverage Google Cloud's Cloud Functions (serverless) and Cloud Run (containerized) to develop a straightforward web application for image recognition using the TensorFlow framework.
+The application will host four deep-learning models we found online (text translation, text-to-speech, sentiment analysis, image-to-text). Application requires large storage, memory, and computation.
 
-We will either utilize pretrained models or train the model using datasets provided by the TensorFlow framework. The model's accuracy should be above 65% based on training and testing data.
+### Solution Design
+#### Containerized
+System Component:
+- Pre-trained Models
+- Docker image
+- Google Cloud Container (google cloud run)
 
-Once we obtain the model, we will integrate it into our application. The application will simply load the model and make predictions based on the input. Then, the application will send the predicted results back to the client.
+Communications Among Components:
+- All components communicate with corresponding API calls inside the container
+- Application inside the container will send the result back to client
 
-The programming language for the application will be Python, utilizing the Flask library.
+Reason for Choice:
 
-For containerized testing, we will test the application locally before deploying the image to the cloud. For serverless testing,  we will use Google Colab to mimic the request before deploying the function.
+We choose google cloud run because easy management and auto scaling
 
-Our primary performance metric for comparison will be latency.
+We choose to include models in the image to minimize additional external network traffic. While the recommended practice is to deploy each model as separate containers, doing so would end up with similar implementations from the Serverless team, thereby defeating the purpose of comparison. Furthermore, we aim to assess the impact of large image files on the overall service model.
+
+
+#### Serverless
+System Components:
+Google Function
+
+Reason: Google Cloud Functions are designed for event-driven architectures. It is well-suited for reacting to environmental changes without manual scaling.
+
+Storage:  Google Cloud Bucket
+
+Reason: GCS is designed for high throughput and low latency access to object data, which is more suitable for serving deep learning models.
+
+Communication:
+
+Client -> Google Functions -> Google Storage ->  Google Functions -> Client
+
+
+### Evaluation Plan
+For both service models, we will measure their latency, storage usage, internal and external network usage, and conduct a bill analysis to determine which part of the service model uses the most resources. We will conduct three tests/scenarios: idle, evenly distributed service requests, and skewed service requests. After obtaining the results, we will evaluate the pros and cons of each service model to decide which one better suits our application needs.

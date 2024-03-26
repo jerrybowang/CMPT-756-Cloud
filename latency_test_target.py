@@ -3,7 +3,7 @@ import threading
 import time
 
 # 定义请求URL
-base_url = "https://cmpt756-yildpitzqa-uw.a.run.app" # 你的URL
+base_url = "<url>" # 你的URL
 # base_url = "http://localhost:8080" # 你的URL
 translate_url = f"{base_url}/translate"
 
