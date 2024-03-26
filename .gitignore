@@ -165,3 +165,7 @@ cython_debug/
 speecht5_tts
 blip-image-captioning-base
 opus-mt-zh-en
+image.png
+latencies.txt
+latencies-target.txt
+latencies-target-sequential.txt
